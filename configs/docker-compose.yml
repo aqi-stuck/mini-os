@@ -1,0 +1,69 @@
+networks:
+  mini-os-net:
+    driver: bridge
+
+volumes:
+  mini-os-logs:
+    driver: local
+  mini-os-data:
+    driver: local
+
+services:
+  logger:
+    image: mini-os/logger:latest
+    container_name: mini-os-logger
+    networks:
+      - mini-os-net
+    volumes:
+      - mini-os-logs:/logs
+    restart: unless-stopped
+    labels:
+      mini-os: "true"
+      service: "logger"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  file:
+    image: mini-os/file:latest
+    container_name: mini-os-file
+    networks:
+      - mini-os-net
+    volumes:
+      - mini-os-data:/data
+    restart: unless-stopped
+    labels:
+      mini-os: "true"
+      service: "file"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    depends_on:
+      - logger
+
+  shell-base:
+    image: mini-os/shell:latest
+    container_name: mini-os-shell-base
+    networks:
+      - mini-os-net
+    volumes:
+      - mini-os-logs:/logs:ro
+      - mini-os-data:/data:ro
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    labels:
+      mini-os: "true"
+      service: "shell-base"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    depends_on:
+      - logger
+      - file

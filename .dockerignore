@@ -1,0 +1,25 @@
+# Python and local environments
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Git and editor files
+.git/
+.github/
+.vscode/
+.idea/
+
+# Runtime state and generated output
+controller/state.json
+controller/state.json.backup*
+data/logs/
+data/users/
+data/volumes/
+logs/
+*.log
+
+# Documentation not needed by image builds
+*.md
+*.txt
+Makefile

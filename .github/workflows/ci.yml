@@ -1,0 +1,36 @@
+name: Mini OS checks
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: controller/requirements.txt
+
+      - name: Install controller dependencies
+        run: python -m pip install -r controller/requirements.txt
+
+      - name: Check Python syntax
+        run: python -m py_compile controller/*.py
+
+      - name: Check shell syntax
+        run: bash -n scripts/*.sh demo.sh test_start.sh
+
+      - name: Validate Compose configuration
+        run: docker compose -f configs/docker-compose.yml config
